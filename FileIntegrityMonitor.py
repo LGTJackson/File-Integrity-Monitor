@@ -4,14 +4,15 @@ import hashlib
 from pprint import pprint
 import shutil
 
+
+
+def file2hash(file_path):
 """
 Takes file path as an argument, 
 gets the SHA256 hash for the contents of the file
 returns file_path and hash
 """
 
-
-def file2hash(file_path):
     with open(file_path, "rb") as f:
         data = f.read()
     sha256 = hashlib.sha256()
@@ -20,6 +21,7 @@ def file2hash(file_path):
     return file_path, sha256.hexdigest()
 
 
+def store_hash(filename, baseline=False, output_file=".baseline.txt"):
 """
 Stores hash values.
 If optional argument baseline is True,
@@ -27,9 +29,6 @@ If optional argument baseline is True,
 If optional argument baseline is False(default) 
 new filehashs are appended to .baseline.txt
 """
-
-
-def store_hash(filename, baseline=False, output_file=".baseline.txt"):
     name, hash_value = file2hash(filename)
     if baseline == True:
         with open(output_file, "w") as f:
@@ -41,23 +40,14 @@ def store_hash(filename, baseline=False, output_file=".baseline.txt"):
     return
 
 
-"""
-Loads the baseline hashes stored
-"""
-
-
 def load_baseline(baseline=".baseline.txt"):
+"""Loads the baseline hashes stored"""
     with open(baseline, "r") as f:
         data = f.readlines()
     return data
 
-
-"""
-Adds baseline data into a dictionary in key: value pairs
-"""
-
-
 def baseline2dict(data):
+"""Adds baseline data into a dictionary in key: value pairs"""
     baseline_dictionary = {}
     for line in data:
         if(line=="\n"):
@@ -71,15 +61,20 @@ def baseline2dict(data):
 
 
 def compare_hash(baseline_path=".baseline.txt", current="test.txt"):
+"""
+Compares the SHA256 hash values
+from the given baseline with 
+the current SHA256 hash values
+for a specified file
+"""
     baseline = baseline2dict(load_baseline(baseline_path))
     name, hash_val = file2hash(current)
     return baseline[name] == hash_val
 
 
-"""
-Notifies user of changes
-"""
+
 def notify(result):
+"""Notifies user if a change is detected"""
     if(result):
         print("File integrity confirmed. \n Changes have not been made to the file.")
         return
